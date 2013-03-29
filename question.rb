@@ -8,27 +8,14 @@ class Question
       WHERE title LIKE (?)
     SQL
     result = QuestionsDatabase.instance.execute(query, title)
-    Question.new(result)
+    Question.new(result[0])
   end
 
-  #OLD CODE
-  # def self.ask_question(title, body, user_id, author)
-#     query = <<-SQL
-#       INSERT
-#       INTO questions
-#       ('title', 'body', 'author')
-#       VALUES (?, ?, ?)
-#     SQL
-#
-#     QuestionsDatabase.instance.execute(query, title, body, author)
-#     question_id = find_question(title).id
-#     QuestionFollowers.ask_question(question_id, user_id)
-#   end
-#
-#   def self.post_reply(title, body, author)
-#     question_id = find_question(title).id
-#     Replies.post_reply(question_id, title, body, author)
-#   end
+  attr_reader :id
+
+  def initialize(data)
+    @id, @title, @body, @author_id = data["id"], data["title"], data["body"], data["author_id"]
+  end
 
   def self.most_followed(n)
     query = <<-SQL
@@ -43,7 +30,6 @@ class Question
     result = QuestionsDatabase.instance.execute(query, n)
     result.each { |hash| qid_array << hash["title"] }
     qid_array
-
   end
 
   def self.most_liked(n)
@@ -54,18 +40,11 @@ class Question
       ORDER BY count DESC
       LIMIT ?
     SQL
+
     qid_array = []
     result = QuestionsDatabase.instance.execute(query, n)
     result.each { |hash| qid_array << hash["title"] }
     qid_array
-
-  end
-
-  attr_reader :id
-
-  def initialize(db)
-    db = db[0]
-    @id, @title, @body, @author_id = db["id"], db["title"],  db["body"],  db["author_id"]
   end
 
   def who_asked
@@ -93,7 +72,6 @@ class Question
   end
 
   def followers
-
     query = <<-SQL
       SELECT fname, lname
       FROM questions q JOIN question_followers qf ON q.id = qf.question_id
@@ -103,13 +81,9 @@ class Question
 
     result = QuestionsDatabase.instance.execute(query, @id)
     qid_array = []
-    result.each { |hash| qid_array << hash["fname"] + " " + hash["lname"] }
+    result.each { |hash| qid_array << "#{hash["fname"]}  #{hash["lname"]}"
     qid_array
-
-
   end
-
-
 end
 
 
