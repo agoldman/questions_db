@@ -1,21 +1,17 @@
 require 'singleton'
 require 'sqlite3'
+load 'model.rb'
 load './questions.rb'
 load 'question.rb'
 load 'question_replies.rb'
 load 'question_followers.rb'
 
-class User
+class User < Model
 
   attr_accessor :fname, :lname, :is_instructor
-  def self.find_user(fname, lname)
-    query = <<-SQL
-      SELECT *
-      FROM users
-      WHERE fname = ? AND lname = ?
-    SQL
-    result = QuestionsDatabase.instance.execute(query, fname, lname)
-    User.new(result[0])
+
+  def self.table_name
+    "users"
   end
 
   def initialize(data)

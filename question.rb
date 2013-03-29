@@ -1,14 +1,7 @@
-class Question
+class Question < Model
 
-  def self.find_question(title)
-
-    query = <<-SQL
-      SELECT *
-      FROM questions
-      WHERE title LIKE (?)
-    SQL
-    result = QuestionsDatabase.instance.execute(query, title)
-    Question.new(result[0])
+  def self.table_name
+    "questions"
   end
 
   attr_reader :id
@@ -81,7 +74,7 @@ class Question
 
     result = QuestionsDatabase.instance.execute(query, @id)
     qid_array = []
-    result.each { |hash| qid_array << "#{hash["fname"]}  #{hash["lname"]}"
+    result.each { |hash| qid_array << "#{hash["fname"]}  #{hash["lname"]}" }
     qid_array
   end
 end
